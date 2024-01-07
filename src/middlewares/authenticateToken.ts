@@ -11,6 +11,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   }
   const token = authHeader.split(" ")[1];
   jwt.verify(token, JWT_SECRET, (err, user) => {
+    console.log(user);
     if (err)
       return res.status(403).json({ message: "Forbidden - Invalid token" });
     req as any;

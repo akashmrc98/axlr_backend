@@ -1,5 +1,5 @@
-import DB from "../../models/db";
-import { admin, logger } from "../../config";
+import DB from "../models/db";
+import { admin, logger } from "../config";
 
 const { UserModel } = DB;
 

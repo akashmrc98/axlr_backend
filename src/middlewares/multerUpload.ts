@@ -1,6 +1,6 @@
 import multer from "multer";
 
-const upload = multer({ dest: "/data" });
+const upload = multer({ storage: multer.memoryStorage() });
 
 const multerUpload = upload.single("file");
 

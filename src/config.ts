@@ -4,11 +4,12 @@ import winston, { format } from "winston";
 dotenv.config();
 
 export const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+export const FK_COOKIE = process.env.FK_COOKIE || "your_fkcookie";
 export const PORT = process.env.PORT || 3000;
 export const admin = {
-  username: process.env.ADMIN_USERNAME,
-  email: process.env.ADMIN_EMAIL,
-  password: process.env.ADMIN_PASS,
+  username: process.env.ADMIN_USERNAME || "admin_username",
+  email: process.env.ADMIN_EMAIL || "admin_email",
+  password: process.env.ADMIN_PASS || "admin_pass",
 };
 
 const logger = winston.createLogger({
