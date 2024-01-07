@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import ProductModel from "../../models/product.model";
+import ProductModel, { Product } from "../../models/product.model";
 
 export const getProductsController = async (req: Request, res: Response) => {
   try {
@@ -8,22 +8,21 @@ export const getProductsController = async (req: Request, res: Response) => {
       category,
       minPrice,
       maxPrice,
+      rating,
       page = 1,
       limit = 40,
     } = req.query as Record<string, string | number>;
     const filter: Record<string, any> = {};
+
+    // Adding searchTerm condition
     if (searchTerm) {
       const searchTermString = searchTerm.toString();
-      // Ensure searchTerm is a string
       filter.$or = [
         { title: { $regex: new RegExp(searchTermString, "i") } },
-        { category: { $regex: new RegExp(searchTermString, "i") } },
         { description: { $regex: new RegExp(searchTermString, "i") } },
+        { category: { $regex: new RegExp(category as string, "i") } },
       ];
     }
-    // Adding category condition
-    if (category)
-      filter.category = { $regex: new RegExp(category as string, "i") };
 
     // Adding price range condition
     if (minPrice || maxPrice) {
@@ -32,18 +31,29 @@ export const getProductsController = async (req: Request, res: Response) => {
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
+    // Adding rating condition
+    if (rating) {
+      filter.rating = {};
+      filter.price.$gte = Number(rating);
+    }
+
+    // mongoose query with all filters and sorts
     const products = await ProductModel.find(filter)
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit));
 
+    // pagination data
     const totalProducts = await ProductModel.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / Number(limit));
+    const pages: number[] = [];
+    for (let i = 1; i < totalPages; i++) pages.push(i);
 
     res.status(200).json({
       products,
       pagination: {
         totalProducts,
         totalPages,
+        pages,
         currentPage: Number(page),
       },
     });

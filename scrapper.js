@@ -2,9 +2,7 @@ const fs = require("fs");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const json2csv = require("json2csv");
-const { FK_COOKIE } = require("./src/config");
-
-const _url = "https://www.flipkart.com/audio-video/pr?sid=0pm&otracker=categorytree&fm=neo%2Fmerchandising&iid=M_8bf4ef6a-304c-42f8-b158-60b40c2f44f7_1_372UD5BXDFYS_MC.9JGNW7M0TUHD&otracker=hp_rich_navigation_1_1.navigationCard.RICH_NAVIGATION_Electronics~Audio~All_9JGNW7M0TUHD&otracker1=hp_rich_navigation_PINNED_neo%2Fmerchandising_NA_NAV_EXPANDABLE_navigationCard_cc_1_L2_view-all&cid=9JGNW7M0TUHD"
+const { COOKIE, URLS } = require("./scarapperData")
 
 class ProductScrapper {
 
@@ -13,11 +11,12 @@ class ProductScrapper {
       method: "get",
       maxBodyLength: Infinity,
       url: "https://www.flipkart.com" + url,
-      headers: { Cookie: FK_COOKIE },
+      headers: { Cookie: COOKIE },
     };
     const response = await axios.request(config);
     const html = response.data;
     const $ = cheerio.load(html);
+
     let product = {
       title: "",
       description: "",
@@ -26,9 +25,12 @@ class ProductScrapper {
       imageUrl: "",
       category: "",
     };
-    $(".B_NuCI").each((index, element) => {
+    $("._2whKao").each((index, element) => {
       const data = $(element).text();
-      product.title = data;
+      product.category = data;
+    });
+    $(".B_NuCI").each((index, element) => {
+      const data = $(element).text(); product.title = data;
     });
     $("._1mXcCf").each((index, element) => {
       const data = $(element).children("p").text();
@@ -42,10 +44,6 @@ class ProductScrapper {
       const data = $(element).text();
       product.rating = data;
     });
-    $("._3GIHBu").each((index, element) => {
-      const data = $(element).find("a").text();
-      product.category = data;
-    });
     $("._3qGmMb").each((index, element) => {
       const data = $(element).eq(0).attr("src");
       product.imageUrl = data;
@@ -53,13 +51,13 @@ class ProductScrapper {
     return product;
   }
 
-  static async scrape(i) {
+  static async scrape(i, u) {
     try {
       let config = {
         method: "get",
         maxBodyLength: Infinity,
-        url: `${_url}&page=${i}`,
-        headers: { Cookie: FK_COOKIE },
+        url: `${u}&page=${i}`,
+        headers: { Cookie: COOKIE },
       };
       const response = await axios.request(config);
       const html = response.data;
@@ -83,34 +81,23 @@ class ProductScrapper {
   }
 }
 
-
 async function save() {
-  const products = [
-    ...await ProductScrapper.scrape(1),
-    ...await ProductScrapper.scrape(2),
-    ...await ProductScrapper.scrape(3),
-    ...await ProductScrapper.scrape(4),
-    ...await ProductScrapper.scrape(5),
-    ...await ProductScrapper.scrape(6),
-    ...await ProductScrapper.scrape(7),
-    ...await ProductScrapper.scrape(8),
-    ...await ProductScrapper.scrape(9),
-    ...await ProductScrapper.scrape(10),
-    ...await ProductScrapper.scrape(11),
-    ...await ProductScrapper.scrape(12),
-    ...await ProductScrapper.scrape(13),
-    ...await ProductScrapper.scrape(14),
-    ...await ProductScrapper.scrape(15),
-    ...await ProductScrapper.scrape(16),
-    ...await ProductScrapper.scrape(17),
-    ...await ProductScrapper.scrape(18),
-    ...await ProductScrapper.scrape(19),
-    ...await ProductScrapper.scrape(20),
-    ...await ProductScrapper.scrape(21),
-    ...await ProductScrapper.scrape(22),
-    ...await ProductScrapper.scrape(23),
-    ...await ProductScrapper.scrape(24),
-  ]
+  const products = []
+  for (let i = 0; i < URLS.length; i++) {
+    const _products = [
+      ...await ProductScrapper.scrape(1, URLS[i]),
+      ...await ProductScrapper.scrape(2, URLS[i]),
+      ...await ProductScrapper.scrape(3, URLS[i]),
+      ...await ProductScrapper.scrape(4, URLS[i]),
+      ...await ProductScrapper.scrape(5, URLS[i]),
+      ...await ProductScrapper.scrape(6, URLS[i]),
+      ...await ProductScrapper.scrape(7, URLS[i]),
+      ...await ProductScrapper.scrape(8, URLS[i]),
+      ...await ProductScrapper.scrape(9, URLS[i]),
+      ...await ProductScrapper.scrape(10, URLS[i]),
+    ]
+    products.push(..._products)
+  }
   ProductScrapper.saveProductsAsCSV(products)
 }
 
