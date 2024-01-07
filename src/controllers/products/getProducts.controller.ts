@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
-import ProductModel, { Product } from "../../models/product.model";
+import ProductModel from "../../models/product.model";
 
 export const getProductsController = async (req: Request, res: Response) => {
   try {
     const {
       query: searchTerm,
-      category,
       minPrice,
       maxPrice,
       rating,
@@ -13,16 +12,6 @@ export const getProductsController = async (req: Request, res: Response) => {
       limit = 40,
     } = req.query as Record<string, string | number>;
     const filter: Record<string, any> = {};
-
-    // Adding searchTerm condition
-    if (searchTerm) {
-      const searchTermString = searchTerm.toString();
-      filter.$or = [
-        { title: { $regex: new RegExp(searchTermString, "i") } },
-        { description: { $regex: new RegExp(searchTermString, "i") } },
-        { category: { $regex: new RegExp(category as string, "i") } },
-      ];
-    }
 
     // Adding price range condition
     if (minPrice || maxPrice) {
@@ -36,6 +25,8 @@ export const getProductsController = async (req: Request, res: Response) => {
       filter.rating = {};
       filter.price.$gte = Number(rating);
     }
+    // searchTerm
+    if (searchTerm) filter.$text = { $search: searchTerm.toString() };
 
     // mongoose query with all filters and sorts
     const products = await ProductModel.find(filter)
@@ -46,7 +37,7 @@ export const getProductsController = async (req: Request, res: Response) => {
     const totalProducts = await ProductModel.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / Number(limit));
     const pages: number[] = [];
-    for (let i = 1; i < totalPages; i++) pages.push(i);
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
 
     res.status(200).json({
       products,

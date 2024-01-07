@@ -32,7 +32,8 @@ export class ProductServices {
     });
   }
 
-  static async rankingAlogoritham(products: Product[]) {
-    // get all the occurances products
+  static async rankingAlogoritham() {
+    // get all the data
+    const products = await ProductModel.find();
   }
 }

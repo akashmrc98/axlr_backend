@@ -13,6 +13,6 @@ router.post(
   multerUpload,
   uploadProductsController
 );
-router.get("/", getProductsController);
+router.get("/", authenticateToken, getProductsController);
 
 export default router;

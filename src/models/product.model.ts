@@ -18,6 +18,8 @@ const productSchema = new Schema<Product>({
   rating: { type: Number, required: true },
 });
 
+productSchema.index({ title: "text", category: "text", description: "text" });
+
 const ProductModel = mongoose.model<Product>("Product", productSchema);
 
 export default ProductModel;

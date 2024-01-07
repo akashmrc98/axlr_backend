@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth.route";
 import ProductRoutes from "./routes/products.route";
 
 import UserServices from "./services/users.service";
+import ProductModel from "./models/product.model";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.listen(PORT, () => {
     })
     .then((res) => {
       UserServices.createAdmin();
+      ProductModel.createIndexes();
       console.log(`Server is running on http://localhost:${PORT}`);
     })
     .catch((err) => console.log(err));
