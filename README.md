@@ -16,3 +16,14 @@ Axlr Backend is a Node.js server designed for the Axlr project. It includes a Ja
 3. **Run Server:**
    ```bash
    npm run dev
+
+### Functionality
+## 1) User Login API with Token
+## 2) Products Upload API with Token Verification
+## 3) Custom Search API
+
+### Objective
+Implement a secure user login API that returns an authentication token upon successful login.
+Allow users to upload product data from an Excel sheet. Verify the user using an authentication token and save the data in the database.
+Implement a custom search API similar to Flipkart's search functionality.
+
