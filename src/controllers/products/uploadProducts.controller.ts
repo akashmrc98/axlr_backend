@@ -1,8 +1,7 @@
 import DB from "../../models/db";
-import { Product } from "../../models/product.model";
-import { ProductServices } from "../../services/products.service";
 
 import { Request, Response } from "express";
+import { ExcellParser } from "../../utils/excellparser.utils";
 
 const { ProductModel } = DB;
 
@@ -10,9 +9,8 @@ export const uploadProductsController = async (req: Request, res: Response) => {
   try {
     const file = (req as any).file;
     if (!file) return res.status(400).json({ error: "No file uploaded" });
-
-    const csvFileContent = file.buffer.toString("utf8");
-    const products: Product[] = await ProductServices.parseCSV(csvFileContent);
+    const products = await ExcellParser.parser(file);
+    console.log(products);
     // Save product data in the database
     await ProductModel.insertMany(products);
     res

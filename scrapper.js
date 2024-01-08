@@ -74,32 +74,68 @@ class ProductScrapper {
     }
   }
 
-  static saveProductsAsCSV(products) {
-    const fields = ["title", "description", "price", "rating", "category", "imageUrl"];
-    const csv = json2csv.parse(products, { fields });
-    fs.writeFileSync("products.csv", csv);
-  }
 }
 
 async function save() {
   const products = []
-  for (let i = 0; i < URLS.length; i++) {
+  for (let i = 0; i < 4; i++) {
     const _products = [
-      ...await ProductScrapper.scrape(1, URLS[i]),
-      ...await ProductScrapper.scrape(2, URLS[i]),
-      ...await ProductScrapper.scrape(3, URLS[i]),
-      ...await ProductScrapper.scrape(4, URLS[i]),
-      ...await ProductScrapper.scrape(5, URLS[i]),
-      ...await ProductScrapper.scrape(6, URLS[i]),
-      ...await ProductScrapper.scrape(7, URLS[i]),
-      ...await ProductScrapper.scrape(8, URLS[i]),
-      ...await ProductScrapper.scrape(9, URLS[i]),
-      ...await ProductScrapper.scrape(10, URLS[i]),
+      ...await ProductScrapper.scrape(1, URLS[2]),
+      // ...await ProductScrapper.scrape(2, URLS[i]),
+      // ...await ProductScrapper.scrape(3, URLS[i]),
+      // ...await ProductScrapper.scrape(4, URLS[i]),
+      // ...await ProductScrapper.scrape(5, URLS[i]),
+      // ...await ProductScrapper.scrape(6, URLS[i]),
+      // ...await ProductScrapper.scrape(7, URLS[i]),
+      // ...await ProductScrapper.scrape(8, URLS[i]),
+      // ...await ProductScrapper.scrape(9, URLS[i]),
+      // ...await ProductScrapper.scrape(10, URLS[i]),
     ]
     products.push(..._products)
   }
-  ProductScrapper.saveProductsAsCSV(products)
+  ExcellFactory.save(products, "xlsx")
 }
+
+class ExcellFactory {
+  fields = ["title", "description", "price", "rating", "category", "imageUrl"];
+
+  static async save(products, ext) {
+    if (ext === "csv") this.csvSaver(products)
+    if (ext === "xlsx") this.xlsSaver(products)
+  }
+
+  static async xlsSaver(products) {
+    // Create a new workbook and add a worksheet
+    const workbook = new excel.Workbook();
+    const worksheet = workbook.addWorksheet('Products');
+    // Add headers to the worksheet
+    this.fields.forEach((field, index) => {
+      worksheet.cell(1, index + 1).string(field);
+    });
+    // Add data to the worksheet
+    products.forEach((product, rowIndex) => {
+      this.fields.forEach((field, colIndex) => {
+        worksheet.cell(rowIndex + 2, colIndex + 1).string(String(product[field]));
+      });
+    });
+    // Save the workbook to a file
+    workbook.write('products.xlsx', (err, stats) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('Excel file created successfully: products.xlsx');
+      }
+    });
+  }
+
+  static async csvSaver(products) {
+    const csv = json2csv.parse(products, { fields: this.fields });
+    fs.writeFileSync("products.csv", csv);
+  }
+}
+
+
+
 
 
 save().then((r) => console.log(r)).catch(e => console.log(e))
