@@ -1,4 +1,3 @@
-import fs from "fs";
 import cors from "cors";
 import morgan from "morgan";
 import express from "express";

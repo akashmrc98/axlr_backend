@@ -11,9 +11,7 @@ const { UserModel } = DB;
 export const loginController = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
     const user = await UserModel.findOne({ email });
-    console.log(user);
     if (!user)
       return res
         .status(401)

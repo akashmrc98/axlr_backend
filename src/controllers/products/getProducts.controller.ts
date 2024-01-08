@@ -11,22 +11,21 @@ export const getProductsController = async (req: Request, res: Response) => {
       page = 1,
       limit = 40,
     } = req.query as Record<string, string | number>;
-    const filter: Record<string, any> = {};
 
+    const filter: Record<string, any> = {};
     // Adding price range condition
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
-
     // Adding rating condition
     if (rating) {
       filter.rating = {};
-      filter.price.$gte = Number(rating);
+      filter.rating.$gte = Number(rating);
     }
     // searchTerm
-    if (searchTerm) filter.$text = { $search: searchTerm.toString() };
+    if (searchTerm) filter.$text = { $search: searchTerm.toString().trim() };
 
     // mongoose query with all filters and sorts
     const products = await ProductModel.find(filter)
