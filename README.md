@@ -14,4 +14,5 @@ Axlr Backend is a Node.js server designed for the Axlr project. It includes a Ja
    ```bash
    npm install
 3. **Run Server:**
+   ```bash
    npm run dev
