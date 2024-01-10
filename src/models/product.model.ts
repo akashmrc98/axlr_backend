@@ -19,6 +19,9 @@ const productSchema = new Schema<Product>({
 });
 
 productSchema.index({ title: "text", category: "text", description: "text" });
+productSchema.index({ title: 1 });
+productSchema.index({ category: 1 });
+productSchema.index({ description: 1 });
 
 const ProductModel = mongoose.model<Product>("Product", productSchema);
 
