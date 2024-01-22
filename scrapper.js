@@ -80,7 +80,7 @@ async function save() {
   const products = []
   for (let i = 0; i < 4; i++) {
     const _products = [
-      ...await ProductScrapper.scrape(1, URLS[2]),
+      ...await ProductScrapper.scrape(1, URLS[i]),
       // ...await ProductScrapper.scrape(2, URLS[i]),
       // ...await ProductScrapper.scrape(3, URLS[i]),
       // ...await ProductScrapper.scrape(4, URLS[i]),
